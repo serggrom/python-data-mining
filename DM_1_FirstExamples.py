@@ -120,23 +120,41 @@ movies = pd.read_table('movies.txt', sep='::', header=None, names=mnames)
 data = pd.merge(pd.merge(ratings, users), movies)
 #print(data.info())
 
-print(data.ix[0])
+#print(data.ix[0])
+
+mean_ratings = data.pivot_table('rating', index='title', columns='gender',
+                                aggfunc='mean')
+#print(mean_ratings[:5])
+
+rating_by_title = data.groupby('title').size()
+
+#print(rating_by_title[:10])
+
+active_titles = rating_by_title.index[rating_by_title >= 250]
+
+#print(active_titles[:10])
+
+mean_ratings = mean_ratings.ix[active_titles]
+
+#print(mean_ratings)
+
+top_female_ratings = mean_ratings.sort_index(by='F', ascending=False)
+
+#print(top_female_ratings[:10])
+
+mean_ratings['diff'] = mean_ratings['M'] - mean_ratings['F']
+
+sorted_by_diff = mean_ratings.sort_index(by='diff')
+
+#print(sorted_by_diff[:15])
 
 
+#print(sorted_by_diff[::-1][:15])
 
+rating_std_by_title = data.groupby('title')['rating'].std()
+rating_std_by_title = rating_std_by_title.ix[active_titles]
 
-
-
-
-
-
-
-
-
-
-
-
-
+print(rating_std_by_title.order(ascending=False)[:10])
 
 
 
